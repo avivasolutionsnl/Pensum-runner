@@ -15,7 +15,7 @@ function addBasicAuth (url, username, password) {
 function getApiKeyName () {
     // Grafana is picky with api key names, generate unique api key name
     const apiKeyName = 'pensum-key';
-    const ts = getUnixTimestamp;
+    const ts = getUnixTimestamp();
     return `${apiKeyName}-${ts}`;
 }
 
