@@ -1,5 +1,6 @@
 # Pensum runner
 The Pensum runner scripts allow you to execute state-machine based load-tests using [K6](https://k6.io/).
+This repository only contains files that you need for using the runner in your project. Examples are located in the [Pensum](https://github.com/avivasolutionsnl/Pensum) overlay repository.
 
 ## Prerequisites
 - [K6](https://k6.io/) v0.26.0
