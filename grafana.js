@@ -1,15 +1,13 @@
 import http from 'k6/http';
+import { b64encode } from 'k6/encoding';
 
 export function getUnixTimestamp () {
     return new Date().getTime();
 }
 
-function addBasicAuth (url, username, password) {
-    const schemeId = '://';
-    const schemeBeginPos = url.search(schemeId);
-    const schemeEndPos = schemeBeginPos + schemeId.length;
-    const basicAuth = `${username}:${password}@`;
-    return url.substring(0, schemeEndPos) + basicAuth + url.substring(schemeEndPos, url.length);
+function calcAuthorizationHeader(username, password) {
+    const str = b64encode(`${username}:${password}`);
+    return `Basic ${str}`;
 }
 
 function getApiKeyName () {
@@ -19,35 +17,43 @@ function getApiKeyName () {
     return `${apiKeyName}-${ts}`;
 }
 
-function createApiKey (url, apiKeyName) {
+function createApiKey (url, apiKeyName, auth) {
     const res = http.post(`${url}/api/auth/keys`, JSON.stringify({
         'name': apiKeyName,
         'role': 'Admin',
         'secondsToLive': 120
     }), {
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 
+            'Authorization': auth,
+            'Content-Type': 'application/json', 
+        }
     });
 
     const json = JSON.parse(res.body);
     return json.key;
 }
 
-function deleteApiKey (url, keyId) {
-    http.del(`${url}/api/auth/keys/${keyId}`);
+function deleteApiKey (url, keyId, auth) {
+    http.del(`${url}/api/auth/keys/${keyId}`, {}, {
+        headers: { 'Authorization': auth }
+    });
 }
 
-function getApiKey (url, username, password) {
-    url = addBasicAuth(url, username, password);
-    const res = http.get(`${url}/api/auth/keys`);
+export function getApiKey (url, username, password) {
+    const auth = calcAuthorizationHeader(username, password);
+
+    const res = http.get(`${url}/api/auth/keys`, { 
+        headers: { 'Authorization': auth } 
+    });
     const json = JSON.parse(res.body);
 
     const apiKeyName = getApiKeyName();
     let apiKey = json.find(({ name }) => name === apiKeyName);
     if (apiKey) {
-        deleteApiKey(url, apiKey.id);
+        deleteApiKey(url, apiKey.id, auth);
     }
 
-    apiKey = createApiKey(url, apiKeyName);
+    apiKey = createApiKey(url, apiKeyName, auth);
     return apiKey;
 }
 
