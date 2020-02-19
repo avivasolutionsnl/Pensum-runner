@@ -1,11 +1,21 @@
 # Pensum runner
+Pensum is a toolset to help you extract, model, and run realistic load-tests.
+
 The Pensum runner scripts allow you to execute state-machine based load-tests using [K6](https://k6.io/).
-This repository only contains files that you need for using the runner in your project. Examples are located in the [Pensum](https://github.com/avivasolutionsnl/Pensum) overlay repository.
+[K6](https://k6.io/) is used to execute the HTTP calls and collect metrics.
+
+Tests can be created manually or extracted from historical data.
+For the latter, the extractor helps you create workload models from historical data and is available in the [Pensum-extractor](https://github.com/avivasolutionsnl/Pensum-extractor) repository.
 
 ## Prerequisites
 - [K6](https://k6.io/) v0.26.0
 
 ## Install
+First install K6:
+```
+PS> npm install k6
+```
+
 As K6 has limited possibilities for re-using Javascript libraries (see [docs](https://docs.k6.io/docs/modules)).
 To use the runner in a load-test the easiest is to copy its files into your project.
 
@@ -61,3 +71,45 @@ export default function myLoadTest {
 }
 ```
 Note that you will have to implement the actions (e.g. `visitHomePage` and `performTransaction`) in the workload model yourself.
+
+## Example
+The [example.js](./example.js) script models a simple load-test. It contains a very basic load-test for an e-commerce based website and consists of 3 states;
+- Visit home page
+- Visit product lister page
+- Abandon visit, ie. leave website
+
+A (virtual) user always starts at the *Home* page and than transitions through the state machine. Each transition in the state machine has a probability assigned. In the example there is 75% chance that a user visits the *Lister* page when it leaves the *Home* page.
+
+The state diagram for the example looks as follows:
+
+![](./example.svg)
+
+### Run
+To run the example use the K6 CLI tooling. For example:
+```
+PS> k6 run ./example.js
+```
+
+By default this runs one virtual user (VU) for 8 iterations, this is hard-coded in the example.
+More details about how to control these parameters can be found [here](https://docs.k6.io/docs/running-k6).
+
+### Reporting
+K6 can automatically log to InfluxDb and results can be presented using Grafana.
+
+> See the K6 official documentation about it [here](https://docs.k6.io/docs/influxdb-grafana)
+
+To get this quickly up and running use Docker (with Linux containers):
+```
+PS> docker-compose up
+```
+
+and run K6 with InfluxDb output:
+```
+PS> k6 run ./example.js --tag Run=1 --out influxdb=http://localhost:8086/k6
+```
+
+View the (live) results in Grafana at http://localhost:3000/.
+There are 3 example dashboards pre-defined (which are stored in [./grafana/provisioning/dashboards](./grafana/provisioning/dashboards)).
+
+After a test run you can create a report using the reporter container.
+This uses the [grafana-reporter] Docker image, its documentation you find [here](https://github.com/IzakMarais/reporter).
