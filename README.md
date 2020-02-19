@@ -17,7 +17,10 @@ PS> npx degit https://github.com/avivasolutionsnl/Pensum-runner pensum-runner
 ```
 
 ## Usage
-The most important API entrypoint is `runWorkload`. This method allows you to run a workload.
+The most important API entrypoint is `runWorkload`, this method allows you to run a workload.
+
+A workload is basically a state machine which models the behavior of a website visitor.
+It starts at the `initial` state and terminates at the `abandon` state. When a state is entered it performs the defined `action` and (if any defined) an `event` from the given `events`. It transitions to the next state by inspecting the `targets`. It decides on what `target` and `event` to choose based on the given probabilities.
 
 For example:
 ```
@@ -29,14 +32,24 @@ export default function myLoadTest {
         abandon: 'abandon',
         states: [{
             name: 'home',
-            targets: [{
-                target: 'home',
-                probability: 50
-            },
-            {
-                target: 'abandon',
-                probability: 50
-            }
+            targets: [
+                {
+                    target: 'home',
+                    probability: 50
+                },
+                {
+                    target: 'abandon',
+                    probability: 50
+                }
+            ],
+            events: [
+                {
+                    name: 'transaction',
+                    occurences: 1,
+                    probability: 100
+                    action: () => performTransaction()
+                }
+            ],
             action: () => visitHomePage()
         },
         {
@@ -47,4 +60,4 @@ export default function myLoadTest {
    })
 }
 ```
-Note that you will have to implement the actions (e.g. `visitHomePage`) in the workload model yourself.
+Note that you will have to implement the actions (e.g. `visitHomePage` and `performTransaction`) in the workload model yourself.
