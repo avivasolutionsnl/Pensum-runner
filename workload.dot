@@ -1,0 +1,19 @@
+digraph G {
+    node [shape=plaintext];
+    Entry;
+    Exit;
+
+    node [shape=circle];
+    "Page A";
+    "Page B";
+    "Page C";
+
+    Entry -> "Page A";
+    "Page A" -> "Page A" [ label="50% Event A" ];
+
+    "Page A" -> "Page B" [ label="50%" ];
+    "Page A" -> "Page C" [ label="50%" ];
+
+    "Page B" -> Exit;
+    "Page C" -> Exit;
+}

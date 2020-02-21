@@ -1,11 +1,70 @@
-# Pensum runner
-Pensum is a toolset to help you extract, model, and run realistic load-tests.
-
-The Pensum runner scripts allow you to execute state-machine based load-tests using [K6](https://k6.io/).
+# Pensum Runner
+The Pensum-runner scripts allow you to execute state-machine based load-tests using [K6](https://k6.io/).
 [K6](https://k6.io/) is used to execute the HTTP calls and collect metrics.
+
+> Pensum-runner is part of the Pensum toolset which helps you extract, model, and run realistic load-tests.
 
 Tests can be created manually or extracted from historical data.
 For the latter, the extractor helps you create workload models from historical data and is available in the [Pensum-extractor](https://github.com/avivasolutionsnl/Pensum-extractor) repository.
+
+Pensum-runner consists of a number of scripts that helps you run a load-test **workload**. A workload is a collection of pages to visit and events to trigger for a single user (ie. website visitor). The order in which the pages are visited are (internally) modeled using a state-machine. A basic example of a workload is shown in the diagram below:
+
+![](./workload.svg)
+
+A workload model consist of a;
+- entry, where a visitor enter the site,
+- number of states, *Page A*, *Page B*, and *Page C* in this example,
+- transition and associated probabilities to next state, e.g. from *Page A* to *Page B* *or* *Page C*" with a change of 50% for either of the pages,
+- number of events and associated probability to perform per state, 50% chance to perform *Event A* in this example,
+- exit, where the visitor leaves the website.
+
+In Javascript code this workload is represented as follows:
+```
+const workload = {
+    initial: 'home', // Corresponds to entry
+    abandon: 'abandon', // Corresponds to exit
+    states: [
+    {
+        name: 'Page A',
+        events: [{
+            name: 'Event A',
+            probability: 50
+            action: () => performEventA()
+        }],
+        targets: [{
+            target: 'Page B',
+            probability: 50
+        }, {
+            target: 'Page C',
+            probability: 50
+        }],
+        action: () => visitPageA()
+    }, 
+    {
+        name: 'Page B',
+        targets: [{
+            target: 'abandon',
+            probability: 100
+        }],
+        action: () => visitPageB()
+    },
+    {
+        name: 'Page C',
+        targets: [{
+            target: 'abandon',
+            probability: 100
+        }],
+        action: () => visitPageC()
+    },
+    {
+        name: 'abandon',
+        targets: [],
+        action: () => {}
+    }]
+}
+```
+
+To visit a page for a certain state a `action` is defined. This function is executed right after the state (ie. page) is entered. When there are `events` present these are, based on configured likelihood, performed right after using the configured event `action` (ie. `performEventA` in above example).
 
 ## Prerequisites
 - [K6](https://k6.io/) v0.26.0
