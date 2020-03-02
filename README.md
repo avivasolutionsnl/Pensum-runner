@@ -64,7 +64,7 @@ const workload = {
 }
 ```
 
-To visit a page for a certain state a `action` is defined. This function is executed right after the state (ie. page) is entered. When there are `events` present these are, based on configured likelihood, performed right after using the configured event `action` (ie. `performEventA` in above example).
+To visit a page for a certain state an `action` function is defined. This function is executed right after the state, ie. page, is entered. When there are `events` present these are, based on configured probability, performed right after using the configured event `action` (ie. `performEventA` in above example).
 
 ## Prerequisites
 - [K6](https://k6.io/) v0.26.0
