@@ -114,12 +114,17 @@ export default function myLoadTest {
             events: [
                 {
                     name: 'transaction',
-                    occurences: 1,
-                    probability: 100
+                    probability: 100,
                     action: () => performTransaction()
                 }
             ],
-            action: () => visitHomePage()
+            action: (thinkTime) => visitHomePage(thinkTime),
+            thinkTime : {
+                avg: 6, 
+                std: 4, 
+                min: 4, 
+                max: 8   
+            }
         },
         {
             name: 'abandon',

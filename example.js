@@ -3,7 +3,6 @@ import runWorkload from './shared/runworkload.js';
 import think from './shared/think.js';
 import getWithResources from './httpext/getwithresources.js';
 import { group, checkAll } from './shared/k6-ext.js';
-import {getApiKey} from './grafana.js';
 
 export let options = {
     vus: 1,
@@ -11,14 +10,6 @@ export let options = {
 };
 
 const hostName = 'http://demo.mercury-ecommerce.com/';
-
-// Default think time distribution for a user
-const defaultThinkTime = {
-    avg: 6, 
-    std: 4, 
-    min: 4, 
-    max: 8
-};
 
 export default function () {
     // Create a workload that can be executed by the Pensum runner
@@ -37,7 +28,7 @@ export default function () {
                 target: 'abandon',
                 probability: 25
             }],
-            action: () => visitHomePage()
+            action: (thinkTime) => visitHomePage(thinkTime)
         }, 
         // Lister
         {
@@ -52,7 +43,7 @@ export default function () {
             }],
             // For example only: always visit the prepare/bar product lister page. 
             // In a real setup the lister pages should be dynamically selected, e.g. based on the sitemap and a random distribution
-            action: () => visitListerPage('prepare/bar')
+            action: (thinkTime) => visitListerPage(thinkTime, 'prepare/bar')
         },
         // Abandon, ie. leave website
         {
@@ -63,7 +54,7 @@ export default function () {
     });
 }
 
-function visitHomePage () {
+function visitHomePage (thinkTime) {
     group('Home', function () {
         // Load the webpage including all resources defined in <script> and <link> HTML tags
         getWithResources(hostName, hostName, { tags: { page: 'Home', type: 'page' } });
@@ -82,10 +73,10 @@ function visitHomePage () {
     });
 
     // Simulate user think time, ie. wait some time before continuing
-    think(defaultThinkTime.avg, defaultThinkTime.std, defaultThinkTime.min, defaultThinkTime.max);
+    think(thinkTime.avg, thinkTime.std, thinkTime.min, thinkTime.max);
 }
 
-function visitListerPage (categoryUrl) {
+function visitListerPage (thinkTime, categoryUrl) {
     group('Lister', function () {
         getWithResources(hostName, `${hostName}/${categoryUrl}`, { tags: { page: 'Lister', type: 'page' } });
         
@@ -107,5 +98,5 @@ function visitListerPage (categoryUrl) {
     });
 
     // Simulate user think time, ie. wait some time before continuing
-    think(defaultThinkTime.avg, defaultThinkTime.std, defaultThinkTime.min, defaultThinkTime.max);
+    think(thinkTime.avg, thinkTime.std, thinkTime.min, thinkTime.max);
 }

@@ -41,13 +41,13 @@ function runWorkload (workload) {
 
     while (current.value !== workload.abandon) {
         const state = workload.states.find(s => s.name === current.value);
-        state.action();
+        state.action(state.thinkTime);
 
         // Optionally perform an event
         if (state.events) {
             const event = runRandom(state.events);
             if (event) {
-                event.action();
+                event.action(event);
             }
         }
 
