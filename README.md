@@ -1,4 +1,5 @@
-# Pensum Runner
+# ![Pensum-runner](./logo.png)
+
 The Pensum-runner scripts allow you to execute state-machine based load-tests using [K6](https://k6.io/).
 [K6](https://k6.io/) is used to execute the HTTP calls and collect metrics.
 
