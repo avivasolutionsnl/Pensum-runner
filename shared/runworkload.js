@@ -1,5 +1,6 @@
 import { Machine } from '../vendor/xstate.js';
 import convertProbabilitiesToRange from './convertProbabilitiesToRange.js';
+import runRandom from './runrandom.js';
 
 function createConditionalTargets (targets) {
     const ranges = convertProbabilitiesToRange(targets.map(t => ({ prob: t.probability, data: t.target })));
@@ -40,7 +41,15 @@ function runWorkload (workload) {
 
     while (current.value !== workload.abandon) {
         const state = workload.states.find(s => s.name === current.value);
-        state.action();
+        state.action(state.thinkTime);
+
+        // Optionally perform an event
+        if (state.events) {
+            const event = runRandom(state.events);
+            if (event) {
+                event.action(event);
+            }
+        }
 
         current = toggleMachine.transition(current, 'NAVIGATE', { rand: Math.random() * 100 });
     }

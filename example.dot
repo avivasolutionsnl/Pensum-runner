@@ -1,0 +1,16 @@
+digraph G {
+    node [shape=plaintext];
+    Entry;
+    Exit;
+
+    node [shape=circle];
+    Entry -> Home;
+   
+    Home -> Lister [ label="75%" ];
+    Home -> Abandon [ label="25%" ];
+
+    Lister -> Home [ label="15%" ];
+    Lister -> Abandon [ label="85%" ];
+
+    Abandon -> Exit;
+}

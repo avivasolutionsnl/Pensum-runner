@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  influxdb:
+    image: influxdb:latest
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_DB=k6 # No retention policy set, as this is locally not so useful
+
+  grafana:
+    image: grafana/grafana:latest
+    links:
+      - influxdb
+    environment:
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_BASIC_ENABLED=false
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+
+  reporter:
+    image: izakmarais/grafana-reporter
+    links:
+      - influxdb
+      - grafana
+    command: -ip 'grafana:3000'
+    ports:
+      - "8686:8686"
