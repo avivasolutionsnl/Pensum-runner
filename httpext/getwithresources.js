@@ -30,8 +30,8 @@ function shouldInclude (url, rootUrl, includeExternalLinks) {
     return url !== '' && (includeExternalLinks || url.startsWith(rootUrl));
 }
 
-export default function (rootUrl, url, tag, includeExternalLinks = false) {
-    const res = http.get(url, tag);
+export default function (rootUrl, url, includeExternalLinks = false) {
+    const res = http.get(url);
     failCheck(res, {
         'is status 200': (r) => r.status === 200
     });
