@@ -13,7 +13,8 @@ export let options = {
 const hostName = 'http://demo.mercury-ecommerce.com/';
 
 export default function () {
-    randomSeed(__VU); // Seed so that multiple runs use the same probability (and thus path)
+    // Seed so that multiple runs use the same probability (and thus path)
+    randomSeed(__VU * 1000 + __ITER); // Unique seed per virtual user and iteration
 
     // Create a workload that can be executed by the Pensum runner
     runWorkload({
