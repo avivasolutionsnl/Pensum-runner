@@ -1,3 +1,4 @@
+import { randomSeed } from 'k6';
 import http from 'k6/http';
 import runWorkload from './shared/runworkload.js';
 import think from './shared/think.js';
@@ -12,6 +13,9 @@ export let options = {
 const hostName = 'http://demo.mercury-ecommerce.com/';
 
 export default function () {
+    // Seed so that multiple runs use the same probability (and thus path)
+    randomSeed(__VU * 1000 + __ITER); // Unique seed per virtual user and iteration
+
     // Create a workload that can be executed by the Pensum runner
     runWorkload({
         initial: 'home',
