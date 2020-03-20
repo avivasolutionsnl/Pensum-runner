@@ -31,7 +31,7 @@ function shouldInclude (url, rootUrl, includeExternalLinks) {
 }
 
 export default function (rootUrl, url, includeExternalLinks = false) {
-    return group('PageWithResources', function () {
+    return group('Page', function () {
         const res = http.get(url);
         failCheck(res, {
             'is status 200': (r) => r.status === 200
