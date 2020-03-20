@@ -61,7 +61,7 @@ export default function () {
 function visitHomePage (thinkTime) {
     group('Home', function () {
         // Load the webpage including all resources defined in <script> and <link> HTML tags
-        getWithResources(hostName, hostName, { tags: { page: 'Home', type: 'page' } });
+        getWithResources(hostName, hostName);
 
         // Additionally perform important async JS calls, e.g. get cart
         let req = [{
@@ -82,7 +82,7 @@ function visitHomePage (thinkTime) {
 
 function visitListerPage (thinkTime, categoryUrl) {
     group('Lister', function () {
-        getWithResources(hostName, `${hostName}/${categoryUrl}`, { tags: { page: 'Lister', type: 'page' } });
+        getWithResources(hostName, `${hostName}/${categoryUrl}`);
         
         // Additionally perform important async JS calls, e.g. get cart & product comparison
         let req = [{

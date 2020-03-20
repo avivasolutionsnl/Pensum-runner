@@ -174,7 +174,11 @@ PS> k6 run ./example.js --tag Run=1 --out influxdb=http://localhost:8086/k6
 ```
 
 View the (live) results in Grafana at http://localhost:3000/.
-There are 3 example dashboards pre-defined (which are stored in [./grafana/provisioning/dashboards](./grafana/provisioning/dashboards)).
+
+You can use the k6 [example](https://grafana.com/grafana/dashboards/2587) dashboard, or
+the Pensum example dashboard which is pre-loaded (and stored in [./grafana/provisioning/dashboards](./grafana/provisioning/dashboards)).
+
+The Pensum dashboard offers test run comparison functionality and shows Telegraf performance metrics (which you will have to manually enable for your project).
 
 After a test run you can create a report using the reporter container.
 This uses the [grafana-reporter] Docker image, its documentation you find [here](https://github.com/IzakMarais/reporter).
