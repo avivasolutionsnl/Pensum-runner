@@ -71,10 +71,7 @@ To visit a page for a certain state an `action` function is defined. This functi
 - [K6](https://k6.io/) v0.26.0
 
 ## Install
-First install K6:
-```
-PS> npm install k6
-```
+First install K6: https://k6.io/docs/getting-started/installation
 
 As K6 has limited possibilities for re-using Javascript libraries (see [docs](https://docs.k6.io/docs/modules)).
 To use the runner in a load-test the easiest is to copy its files into your project.
